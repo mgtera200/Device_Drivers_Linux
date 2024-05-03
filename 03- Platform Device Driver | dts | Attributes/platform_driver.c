@@ -50,87 +50,120 @@ const struct of_device_id platDeviceIdDTS[4] = {
     {}
 };
 
-// Function to show the direction attribute of LED nodes
+/*
+ * Function: teraShow1
+ * --------------------
+ * Function to read the value of LED nodes.
+ *
+ * Parameters:
+ * - dev: Pointer to the device structure.
+ * - attr: Pointer to the device attribute structure.
+ * - buf: Buffer to store the read value.
+ *
+ * Returns:
+ * - Length of the read value.
+ */
 ssize_t teraShow1(struct device *dev, struct device_attribute *attr, char *buf)
 {
-    size_t len;
-    char *label;
-    // Restore the data i saved earlier in probe function to use it
-    label = dev_get_drvdata(dev);
+    size_t len; // Variable to store length of read value
+    char *label; // Variable to store device label
 
-    if (strcmp(label, "redled_1") == 0)
+    // Restore the data saved earlier in probe function to use it
+    label = dev_get_drvdata(dev); // Retrieve label from driver data
+
+    // Check the label and set the value accordingly
+    if (strcmp(label, "redled_1") == 0) // Check if label is "redled_1"
     {
-        if (direction_pin2 == 1)
+        if (direction_pin2 == 1) // Check if pin direction is output
         {
-            strcpy(buf, "1");
-            len = strlen("1");
+            strcpy(buf, "1"); // Set buffer to "1"
+            len = strlen("1"); // Update length
         }
-        else if (direction_pin2 == 0)
+        else if (direction_pin2 == 0) // Check if pin direction is input
         {
-            strcpy(buf, "0");
-            len = strlen("0");
+            strcpy(buf, "0"); // Set buffer to "0"
+            len = strlen("0"); // Update length
         }
     }
-    else if (strcmp(label, "redled_2") == 0)
+    else if (strcmp(label, "redled_2") == 0) // Check if label is "redled_2"
     {
-        if (direction_pin3 == 1)
+        if (direction_pin3 == 1) // Check if pin direction is output
         {
-            strcpy(buf, "1");
-            len = strlen("1");
+            strcpy(buf, "1"); // Set buffer to "1"
+            len = strlen("1"); // Update length
         }
-        else if (direction_pin3 == 0)
+        else if (direction_pin3 == 0) // Check if pin direction is input
         {
-            strcpy(buf, "0");
-            len = strlen("0");
+            strcpy(buf, "0"); // Set buffer to "0"
+            len = strlen("0"); // Update length
         }
     }
-    return len;
+    return len; // Return length of read value
 }
 
-// Function to store the direction attribute of LED nodes
+/*
+ * Function: teraStore1
+ * ---------------------
+ * Function to store the direction attribute of LED nodes.
+ *
+ * Parameters:
+ * - dev: Pointer to the device structure.
+ * - attr: Pointer to the device attribute structure.
+ * - buf: Buffer containing the input string.
+ * - count: Number of bytes in the buffer.
+ *
+ * Returns:
+ * - Number of bytes written.
+ */
 ssize_t teraStore1(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
     // Define constants for string representations of directions
-    const char *direction_output = "output";
-    const char *direction_input = "input";
-    char *label;
-    // Restore the data i saved earlier in probe function to use it
-    label = dev_get_drvdata(dev);
+    const char *direction_output = "output"; // Define string constant for "output"
+    const char *direction_input = "input";   // Define string constant for "input"
+    char *label;                              // Variable to store device label
 
-    if (strcmp(label, "redled_1") == 0)
+    // Restore the data saved earlier in the probe function to use it
+    label = dev_get_drvdata(dev); // Retrieve label from driver data
+
+    // Check the label and set the direction accordingly
+    if (strcmp(label, "redled_1") == 0) // Check if label is "redled_1"
     {
+        // Check if the input string matches "output"
         if (strncmp(buf, direction_output, strlen(direction_output)) == 0)
         {
-            int current_gpio_value = gpio_get_value(2);
-            gpio_direction_output(2, current_gpio_value);
-            direction_pin2 = 1;
-            printk("gpio direction is set to output for redled_1\n");
+            int current_gpio_value = gpio_get_value(2); // Get current GPIO value
+            gpio_direction_output(2, current_gpio_value); // Set GPIO pin direction as output
+            direction_pin2 = 1; // Update direction flag
+            printk("gpio direction is set to output for redled_1\n"); // Print message
         }
+        // Check if the input string matches "input"
         else if (strncmp(buf, direction_input, strlen(direction_input)) == 0)
         {
-            gpio_direction_input(2);
-            direction_pin2 = 0;
-            printk("gpio direction is set to input for redled_1\n");
+            gpio_direction_input(2); // Set GPIO pin direction as input
+            direction_pin2 = 0; // Update direction flag
+            printk("gpio direction is set to input for redled_1\n"); // Print message
         }
         else
         {
             return -EINVAL; // Return error if input is neither "output" nor "input"
         }
     }
-    else if (strcmp(label, "redled_2") == 0)
+    else if (strcmp(label, "redled_2") == 0) // Check if label is "redled_2"
     {
+        // Check if the input string matches "output"
         if (strncmp(buf, direction_output, strlen(direction_output)) == 0)
         {
-            int current_gpio_value = gpio_get_value(3);
-            gpio_direction_output(3, current_gpio_value);
-            direction_pin3 = 1;
-            printk("gpio direction is set to output for redled_2\n");
+            int current_gpio_value = gpio_get_value(3); // Get current GPIO value
+            gpio_direction_output(3, current_gpio_value); // Set GPIO pin direction as output
+            direction_pin3 = 1; // Update direction flag
+            printk("gpio direction is set to output for redled_2\n"); // Print message
         }
+        // Check if the input string matches "input"
         else if (strncmp(buf, direction_input, strlen(direction_input)) == 0)
         {
-            gpio_direction_input(3);
-            direction_pin3 = 0;
-            printk("gpio direction is set to input for redled_2\n");
+            gpio_direction_input(3); // Set GPIO pin direction as input
+            direction_pin3 = 0; // Update direction flag
+            printk("gpio direction is set to input for redled_2\n"); // Print message
         }
         else
         {
@@ -443,3 +476,4 @@ module_init(teraINIT);
 
 /* Marks the exit point for cleaning up a kernel module */
 module_exit(teraDEINIT);
+
