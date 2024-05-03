@@ -241,54 +241,64 @@ struct device_attribute myDevsAttr[2] =
             .store = teraStore1},
         [1] = {.attr = {.name = "value", .mode = S_IRUSR}, .show = teraShow2, .store = NULL}};
 
-// Probe function for the platform driver. Called when a device is detected.
+/*
+ * Function: prob_device
+ * ----------------------
+ * Probe function for the platform driver. Called when a device is detected.
+ *
+ * Parameters:
+ * - sLED_P: Pointer to the platform device structure representing the detected device.
+ *
+ * Returns:
+ * - 0 on success, otherwise an error code.
+ */
 int prob_device(struct platform_device *sLED_P)
 {
-    struct device *dev = &sLED_P->dev;
-    int ret, led_value, gpio_pin;
-    const char *label;
+    struct device *dev = &sLED_P->dev; // Pointer to the device structure
+    int ret, led_value, gpio_pin; // Variables for return values and LED properties
+    const char *label; // Variable to store device label
 
-    enum leds
+    enum leds // Enum for LED node status
     {
-        redled_1,
-        redled_2
+        redled_1, // Status for redled_1
+        redled_2  // Status for redled_2
     } node_status;
 
-    printk("The probe function is called\n");
+    printk("The probe function is called\n"); // Print message indicating probe function call
 
     // Check for required device properties
     if (!device_property_present(dev, "label"))
     {
-        printk("Error, Device property 'label' not found\n");
-        return -1;
+        printk("Error, Device property 'label' not found\n"); // Print error message if label property not found
+        return -1; // Return error code
     }
     if (!device_property_present(dev, "led_value"))
     {
-        printk("Error, Device property 'led_value' not found\n");
-        return -1;
+        printk("Error, Device property 'led_value' not found\n"); // Print error message if led_value property not found
+        return -1; // Return error code
     }
     if (!device_property_present(dev, "gpio_pin"))
     {
-        printk("Error, Device property 'gpio_pin' not found\n");
-        return -1;
+        printk("Error, Device property 'gpio_pin' not found\n"); // Print error message if gpio_pin property not found
+        return -1; // Return error code
     }
     if (!device_property_present(dev, "buff_size"))
     {
-        printk("Error, Device property 'buff_size' not found\n");
-        return -1;
+        printk("Error, Device property 'buff_size' not found\n"); // Print error message if buff_size property not found
+        return -1; // Return error code
     }
     if (!device_property_present(dev, "perm"))
     {
-        printk("Error, Device property 'perm' not found\n");
-        return -1;
+        printk("Error, Device property 'perm' not found\n"); // Print error message if perm property not found
+        return -1; // Return error code
     }
 
     // Read device properties
-    ret = device_property_read_string(dev, "label", &label);
+    ret = device_property_read_string(dev, "label", &label); // Read label property
     if (ret)
     {
-        printk("Error, couldn't read 'label'\n");
-        return -1;
+        printk("Error, couldn't read 'label'\n"); // Print error message if label property cannot be read
+        return -1; // Return error code
     }
     // Print the label of the device
     printk("label is %s\n", label);
@@ -298,91 +308,91 @@ int prob_device(struct platform_device *sLED_P)
     dev_set_drvdata(dev, global_label);
 
     // Determine LED node status based on label
-    if (strcmp(label, "redled_1") == 0)
+    if (strcmp(label, "redled_1") == 0) // Check if label is "redled_1"
     {
-        node_status = redled_1;
+        node_status = redled_1; // Set node status to redled_1
     }
-    else if (strcmp(label, "redled_2") == 0)
+    else if (strcmp(label, "redled_2") == 0) // Check if label is "redled_2"
     {
-        node_status = redled_2;
+        node_status = redled_2; // Set node status to redled_2
     }
 
     // Read LED properties
-    ret = device_property_read_u32(dev, "led_value", &led_value);
+    ret = device_property_read_u32(dev, "led_value", &led_value); // Read led_value property
     if (ret)
     {
-        printk("Error, couldn't read 'led_value' for %s\n", label);
-        return -1;
+        printk("Error, couldn't read 'led_value' for %s\n", label); // Print error message if led_value property cannot be read
+        return -1; // Return error code
     }
-    printk("led_value is %d\n", led_value);
+    printk("led_value is %d\n", led_value); // Print led_value
 
-    ret = device_property_read_u32(dev, "gpio_pin", &gpio_pin);
+    ret = device_property_read_u32(dev, "gpio_pin", &gpio_pin); // Read gpio_pin property
     if (ret)
     {
-        printk("Error, couldn't read 'gpio_pin' for %s\n", label);
-        return -1;
+        printk("Error, couldn't read 'gpio_pin' for %s\n", label); // Print error message if gpio_pin property cannot be read
+        return -1; // Return error code
     }
-    printk("gpio_pin is %d\n", gpio_pin);
+    printk("gpio_pin is %d\n", gpio_pin); // Print gpio_pin
 
     // Read additional properties
-    ret = device_property_read_u32(dev, "buff_size", &buff_size[node_status]);
+    ret = device_property_read_u32(dev, "buff_size", &buff_size[node_status]); // Read buff_size property
     if (ret)
     {
-        printk("Error, couldn't read 'buff_size' for %s\n", label);
-        return -1;
+        printk("Error, couldn't read 'buff_size' for %s\n", label); // Print error message if buff_size property cannot be read
+        return -1; // Return error code
     }
-    printk("buff_size is %d\n", buff_size[node_status]);
+    printk("buff_size is %d\n", buff_size[node_status]); // Print buff_size
 
-    ret = device_property_read_u32(dev, "perm", &perm[node_status]);
+    ret = device_property_read_u32(dev, "perm", &perm[node_status]); // Read perm property
     if (ret)
     {
-        printk("Error, couldn't read 'perm'\n");
-        return -1;
+        printk("Error, couldn't read 'perm'\n"); // Print error message if perm property cannot be read
+        return -1; // Return error code
     }
-    printk("perm is %d\n", perm[node_status]);
+    printk("perm is %d\n", perm[node_status]); // Print perm
 
     // Request and configure GPIO pin
-    if (gpio_request(gpio_pin, "LED_pin"))
+    if (gpio_request(gpio_pin, "LED_pin")) // Request GPIO pin
     {
-        printk("Cannot allocate GPIO pin %d\n", gpio_pin);
+        printk("Cannot allocate GPIO pin %d\n", gpio_pin); // Print error message if GPIO pin allocation fails
     }
     else
     {
-        printk("GPIO pin %d allocated successfully\n", gpio_pin);
+        printk("GPIO pin %d allocated successfully\n", gpio_pin); // Print success message if GPIO pin allocation is successful
     }
-    if (gpio_direction_output(gpio_pin, led_value))
+    if (gpio_direction_output(gpio_pin, led_value)) // Set GPIO pin direction
     {
-        printk("Cannot set the GPIO pin %d to be output\n", gpio_pin);
-        gpio_free(gpio_pin);
+        printk("Cannot set the GPIO pin %d to be output\n", gpio_pin); // Print error message if GPIO pin direction setting fails
+        gpio_free(gpio_pin); // Free GPIO pin
     }
     else
     {
-        printk("GPIO pin %d set to be output\n", gpio_pin);
+        printk("GPIO pin %d set to be output\n", gpio_pin); // Print success message if GPIO pin direction is set successfully
     }
 
     // Create device file for the detected device
     if (device_create(teraData_st.my_class, NULL, teraData_st.my_device_nr + (node_status), NULL, label) == NULL)
     {
-        printk("Can not create device file for %s!\n", label);
+        printk("Can not create device file for %s!\n", label); // Print error message if device file creation fails
     }
     else
     {
-        printk("Device file Created for %s!\n", label);
+        printk("Device file Created for %s!\n", label); // Print success message if device file is created successfully
     }
 
     // Create attributes for the device
-    printk("Creating the attributes for %s \n", label);
-    int i = 0;
-    for (i = 0; i < 2; i++)
+    printk("Creating the attributes for %s \n", label); // Print message indicating attribute creation
+    int i = 0; // Counter variable
+    for (i = 0; i < 2; i++) // Loop through attributes
     {
-        int retval = device_create_file(dev, &(myDevsAttr[i]));
+        int retval = device_create_file(dev, &(myDevsAttr[i])); // Create attribute file
         if (retval)
         {
-            printk("Failed to create sysfs attribute file\n");
-            return retval;
+            printk("Failed to create sysfs attribute file\n"); // Print error message if attribute file creation fails
+            return retval; // Return error code
         }
     }
-    printk("Done Creating the attributes for %s \n", label);
+    printk("Done Creating the attributes for %s \n", label); // Print message indicating attribute creation completion
     return 0; // Return success
 }
 
