@@ -2,7 +2,7 @@
 
 / {
 
-    tera_device1 : tera_device1 {
+    tera_device1 {
 
         compatible = "tera,led1";
         status = "okay";
@@ -14,7 +14,7 @@
     };
 
 
-    tera_device2 : tera_device2 {
+    tera_device2 {
         
         compatible = "tera,led2";
         status = "okay";
