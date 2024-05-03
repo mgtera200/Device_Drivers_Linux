@@ -1,0 +1,29 @@
+
+
+/ {
+
+    tera_device1 : tera_device1 {
+
+        compatible = "tera,led1";
+        status = "okay";
+		label = "redled_1";
+		led_value = <1>;
+		gpio_pin = <2>;
+		buff_size = <3>;
+		perm = <0x11>;
+    };
+
+
+    tera_device2 : tera_device2 {
+        
+        compatible = "tera,led2";
+        status = "okay";
+        label = "redled_2";
+        led_value = <1>;
+        gpio_pin = <3>;
+        buff_size = <3>;
+        perm = <0x10>;
+
+    };
+};
+
